@@ -1,0 +1,1082 @@
+/**
+ * ================================================================
+ * STYLESHEET PROGRAM PERMAINAN PUZZLE INTERAKTIF
+ * ================================================================
+ * 
+ * Deskripsi:
+ * Stylesheet lengkap untuk frontend aplikasi puzzle dengan desain
+ * responsive dan modern. Menggunakan CSS Grid untuk layout puzzle
+ * dan Flexbox untuk layout umum.
+ * 
+ * Struktur File:
+ * 1. Reset & Base Styles
+ * 2. Typography
+ * 3. Layout Utilities
+ * 4. Authentication Page
+ * 5. Menu Page
+ * 6. Game Page
+ * 7. Modal & Dialogs
+ * 8. Responsive Design
+ * ================================================================
+ */
+
+/* ================================================================
+   1. RESET & BASE STYLES
+   ================================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --warna-primer: #6366f1;
+  --warna-sekunder: #ec4899;
+  --warna-sukses: #10b981;
+  --warna-warning: #f59e0b;
+  --warna-danger: #ef4444;
+  --warna-bg: #0f172a;
+  --warna-bg-sekunder: #1e293b;
+  --warna-border: #334155;
+  --warna-teks: #f1f5f9;
+  --warna-teks-sekunder: #cbd5e1;
+  --ukuran-font-base: 16px;
+  --radius-base: 8px;
+  --transisi-standar: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+  font-size: var(--ukuran-font-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--warna-bg);
+  color: var(--warna-teks);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ================================================================
+   2. TYPOGRAPHY
+   ================================================================ */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--warna-teks-sekunder);
+}
+
+small {
+  font-size: 0.875rem;
+  color: var(--warna-teks-sekunder);
+}
+
+/* ================================================================
+   3. LAYOUT UTILITIES
+   ================================================================ */
+.aplikasi {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.halaman {
+  display: none;
+  width: 100%;
+  min-height: 100vh;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.halaman.aktif {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wadah-utama {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.wadah-permainan {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.tersembunyi {
+  display: none !important;
+}
+
+/* ================================================================
+   4. AUTHENTICATION PAGE
+   ================================================================ */
+#halaman-authentikasi {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.deskripsi {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 1.125rem;
+}
+
+/* TAB NAVIGATION */
+.tab-navigasi {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--warna-border);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--warna-teks-sekunder);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transisi-standar);
+}
+
+.tab-btn:hover {
+  color: var(--warna-teks);
+}
+
+.tab-btn.aktif {
+  color: var(--warna-primer);
+  border-bottom-color: var(--warna-primer);
+}
+
+/* FORM STYLING */
+.formulir-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formulir-auth.tersembunyi {
+  display: none;
+}
+
+.grup-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.grup-input label {
+  font-weight: 600;
+  color: var(--warna-teks);
+}
+
+.grup-input input {
+  padding: 0.75rem;
+  background: var(--warna-bg-sekunder);
+  border: 2px solid var(--warna-border);
+  border-radius: var(--radius-base);
+  color: var(--warna-teks);
+  font-size: 1rem;
+  transition: var(--transisi-standar);
+}
+
+.grup-input input:focus {
+  outline: none;
+  border-color: var(--warna-primer);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.pesan {
+  padding: 0.75rem;
+  border-radius: var(--radius-base);
+  font-size: 0.9rem;
+  display: none;
+}
+
+.pesan.sukses {
+  display: block;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-left: 4px solid #10b981;
+}
+
+.pesan.error {
+  display: block;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-left: 4px solid #ef4444;
+}
+
+/* ================================================================
+   5. BUTTONS
+   ================================================================ */
+.tombol-utama,
+.tombol-sekunder,
+.tombol-custom,
+.tombol-kesulitan,
+.tombol-hint,
+.tombol-reset,
+.tombol-selesai,
+.tombol-kembali,
+.tombol-logout {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-base);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transisi-standar);
+}
+
+.tombol-utama {
+  background: linear-gradient(135deg, var(--warna-primer), var(--warna-sekunder));
+  color: white;
+  width: 100%;
+  padding: 1rem;
+}
+
+.tombol-utama:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+}
+
+.tombol-utama:active {
+  transform: translateY(0);
+}
+
+.tombol-sekunder {
+  background: var(--warna-bg-sekunder);
+  color: var(--warna-teks);
+  border: 2px solid var(--warna-border);
+}
+
+.tombol-sekunder:hover {
+  border-color: var(--warna-primer);
+  color: var(--warna-primer);
+}
+
+.tombol-custom {
+  background: var(--warna-primer);
+  color: white;
+  width: 100%;
+  padding: 0.75rem;
+}
+
+.tombol-custom:hover {
+  background: #4f46e5;
+}
+
+.tombol-kesulitan {
+  background: var(--warna-bg-sekunder);
+  color: var(--warna-teks);
+  border: 2px solid var(--warna-border);
+  padding: 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tombol-kesulitan .ikon {
+  font-size: 2.5rem;
+}
+
+.tombol-kesulitan:hover {
+  border-color: var(--warna-primer);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.tombol-kembali {
+  background: transparent;
+  color: var(--warna-primer);
+  border: 2px solid var(--warna-primer);
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.tombol-logout {
+  background: var(--warna-danger);
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.tombol-hint,
+.tombol-reset,
+.tombol-selesai {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.tombol-hint {
+  background: var(--warna-warning);
+  color: white;
+}
+
+.tombol-reset {
+  background: var(--warna-bg-sekunder);
+  border: 2px solid var(--warna-border);
+  color: var(--warna-teks);
+}
+
+.tombol-selesai {
+  background: var(--warna-sukses);
+  color: white;
+}
+
+/* ================================================================
+   6. MENU PAGE
+   ================================================================ */
+#halaman-menu {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  overflow-y: auto;
+  padding: 2rem 0;
+}
+
+.kepala-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0 2rem;
+}
+
+.kepala-menu h1 {
+  margin: 0;
+}
+
+.info-pengguna {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+#nama-pengguna {
+  color: var(--warna-teks-sekunder);
+  font-weight: 600;
+}
+
+.menu-konten {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.grid-kesulitan {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+/* CUSTOM DIFFICULTY */
+.bagian-custom {
+  background: var(--warna-bg-sekundo);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--warna-border);
+  margin-bottom: 3rem;
+}
+
+.grup-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-custom {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.input-custom input[type="range"] {
+  flex: 1;
+}
+
+#nilai-ukuran {
+  min-width: 50px;
+  font-weight: 600;
+  color: var(--warna-primer);
+}
+
+/* LEADERBOARD PREVIEW */
+.bagian-papan {
+  background: var(--warna-bg-sekunder);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--warna-border);
+}
+
+.papan-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.papan-preview .loading {
+  text-align: center;
+  color: var(--warna-teks-sekunder);
+}
+
+.papan-preview .kosong {
+  text-align: center;
+  color: var(--warna-teks-sekunder);
+  font-style: italic;
+  padding: 1rem;
+}
+
+/* Styling untuk daftar peringkat */
+.daftar-peringkat {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.daftar-peringkat .item-peringkat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 6px;
+  border-left: 4px solid var(--warna-primer);
+  transition: var(--transisi-standar);
+}
+
+.daftar-peringkat .item-peringkat:hover {
+  background: rgba(99, 102, 241, 0.15);
+  transform: translateX(4px);
+}
+
+.daftar-peringkat .medal {
+  font-size: 1.2rem;
+  min-width: 35px;
+  font-weight: 700;
+  color: var(--warna-primer);
+}
+
+.daftar-peringkat .nama {
+  flex: 1;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.daftar-peringkat .skor {
+  font-weight: 600;
+  color: var(--warna-sukses);
+  min-width: 80px;
+  text-align: right;
+}
+
+.papan-preview .item-papan {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 6px;
+  border-left: 4px solid var(--warna-primer);
+}
+
+.papan-preview .peringkat {
+  font-weight: 700;
+  color: var(--warna-primer);
+  min-width: 30px;
+}
+
+.papan-preview .nama-pemain {
+  flex: 1;
+  margin-left: 1rem;
+}
+
+.papan-preview .skor-pemain {
+  font-weight: 600;
+  color: var(--warna-teks);
+}
+
+/* ================================================================
+   7. GAME PAGE
+   ================================================================ */
+#halaman-permainan {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* HEADER GAME */
+.header-game {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: var(--warna-bg-sekunder);
+  border-bottom: 1px solid var(--warna-border);
+  gap: 2rem;
+}
+
+.header-game h2 {
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.stats-game {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat .label {
+  font-size: 0.85rem;
+  color: var(--warna-teks-sekunder);
+}
+
+.stat .nilai {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--warna-primer);
+}
+
+/* GAME AREA */
+.area-permainan {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 1.5rem;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* IMAGE SECTION */
+.bagian-gambar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gambar-preview {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid var(--warna-border);
+  background: var(--warna-bg-sekunder);
+}
+
+.kontrol-gambar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* PUZZLE BOARD */
+.bagian-puzzle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.papan-puzzle {
+  display: grid;
+  gap: 0;
+  border: 3px solid var(--warna-primer);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--warna-bg-sekunder);
+  box-shadow: 0 20px 50px rgba(99, 102, 241, 0.2);
+  aspect-ratio: 1;
+  width: 420px;
+  height: 420px;
+}
+
+.slot-papan {
+  background: var(--warna-bg);
+  border: 1px solid var(--warna-border);
+  cursor: drop;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: var(--transisi-standar);
+}
+
+.slot-papan.dragover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--warna-primer);
+}
+
+.slot-papan.berisi {
+  background: var(--warna-bg-sekunder);
+}
+
+.tile-gambar {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  cursor: grab;
+  /* JANGAN inherit - set explicit di JavaScript */
+}
+
+.tile-gambar:active {
+  cursor: grabbing;
+}
+
+/* TILES POOL */
+.bagian-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bagian-tiles h3 {
+  margin: 0;
+}
+
+.pool-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile-size, 100px), 1fr));
+  gap: 0.75rem;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.tile-item {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--warna-bg-sekunder);
+  border: 2px solid var(--warna-border);
+  border-radius: 8px;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transisi-standar);
+}
+
+.tile-item:active {
+  cursor: grabbing;
+}
+
+.tile-item:hover {
+  border-color: var(--warna-primer);
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+}
+
+.tile-item.ditempatkan {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ================================================================
+   8. MODAL & DIALOGS
+   ================================================================ */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal.tersembunyi {
+  display: none !important;
+}
+
+.isi-modal {
+  background: var(--warna-bg-sekunder);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid var(--warna-border);
+  animation: popUp 0.3s ease-in-out;
+}
+
+@keyframes popUp {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.isi-modal h2 {
+  margin-bottom: 1rem;
+}
+
+.hasil-akhir {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.hasil-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid var(--warna-primer);
+}
+
+.hasil-item .label {
+  color: var(--warna-teks-sekunder);
+}
+
+.nilai-besar {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--warna-primer);
+}
+
+.tombol-modal {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.tombol-modal button {
+  flex: 1;
+}
+
+/* ================================================================
+   9. LEADERBOARD PAGE STYLES
+   ================================================================ */
+
+.wadah-leaderboard {
+  margin-top: 2rem;
+  border-radius: var(--radius-base);
+  overflow: hidden;
+  border: 1px solid var(--warna-border);
+}
+
+.tabel-peringkat {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabel-peringkat table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--warna-bg-sekunder);
+}
+
+.tabel-peringkat thead {
+  background: linear-gradient(135deg, var(--warna-primer) 0%, var(--warna-sekunder) 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tabel-peringkat th {
+  padding: 1.25rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tabel-peringkat td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--warna-border);
+  color: var(--warna-teks);
+  font-size: 0.95rem;
+}
+
+.tabel-peringkat tbody tr {
+  transition: var(--transisi-standar);
+}
+
+.tabel-peringkat tbody tr:hover {
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.tabel-peringkat tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Nomor peringkat dengan styling khusus */
+.kolom-rank {
+  width: 80px;
+  text-align: center;
+}
+
+.tabel-peringkat td:first-child {
+  text-align: center;
+  font-weight: 600;
+  color: var(--warna-primer);
+  font-size: 1.1rem;
+}
+
+/* Medal emoji untuk top 3 */
+.tabel-peringkat tbody tr:nth-child(1) td:first-child::before {
+  content: '🥇 ';
+}
+
+.tabel-peringkat tbody tr:nth-child(2) td:first-child::before {
+  content: '🥈 ';
+}
+
+.tabel-peringkat tbody tr:nth-child(3) td:first-child::before {
+  content: '🥉 ';
+}
+
+/* Skor styling */
+.kolom-skor {
+  text-align: right;
+  font-weight: 600;
+  color: var(--warna-sukses);
+  font-size: 1.05rem;
+}
+
+.tabel-peringkat td.kolom-skor {
+  color: var(--warna-sukses);
+}
+
+/* Nama pemain */
+.kolom-nama {
+  font-weight: 500;
+  width: 200px;
+}
+
+/* Email */
+.kolom-email {
+  font-size: 0.9rem;
+  color: var(--warna-teks-sekunder);
+}
+
+/* Waktu login */
+.kolom-login {
+  font-size: 0.85rem;
+  color: var(--warna-teks-sekunder);
+}
+
+/* Loading state */
+.tabel-peringkat .loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--warna-teks-sekunder);
+  font-style: italic;
+}
+
+/* Empty state */
+.tabel-peringkat .kosong {
+  text-align: center;
+  padding: 2rem;
+  color: var(--warna-teks-sekunder);
+}
+
+.bagian-aksi {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.tombol-leaderboard {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-base);
+  background: linear-gradient(135deg, var(--warna-primer) 0%, var(--warna-sekunder) 100%);
+  color: #ffffff;
+  cursor: pointer;
+  transition: var(--transisi-standar);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.tombol-leaderboard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.tombol-leaderboard:active {
+  transform: translateY(0);
+}
+
+.tombol-navigasi {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+/* ================================================================
+   9. RESPONSIVE LEADERBOARD
+   ================================================================ */
+@media (max-width: 768px) {
+  .tabel-peringkat {
+    font-size: 0.9rem;
+  }
+
+  .tabel-peringkat th,
+  .tabel-peringkat td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .kolom-nama {
+    width: auto;
+  }
+
+  .kolom-email {
+    display: none;
+  }
+
+  .kolom-rank {
+    width: 60px;
+  }
+}
+
+/* ================================================================
+   10. ACCESSIBILITY
+   ================================================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .area-permainan {
+    grid-template-columns: 1fr;
+  }
+
+  .header-game {
+    flex-wrap: wrap;
+  }
+
+  .kepala-menu {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .grid-kesulitan {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-game {
+    width: 100%;
+    justify-content: space-around;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .wadah-utama {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .area-permainan {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .grid-kesulitan {
+    grid-template-columns: 1fr;
+  }
+
+  .header-game {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .tombol-hint,
+  .tombol-reset,
+  .tombol-selesai {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+}
+
+/* ================================================================
+   10. ACCESSIBILITY
+   ================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --warna-bg: #f8f9fa;
+    --warna-bg-sekunder: #ffffff;
+    --warna-border: #e0e0e0;
+    --warna-teks: #1a1a1a;
+    --warna-teks-sekunder: #666666;
+  }
+}

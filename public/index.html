@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧩 Program Permainan Puzzle Interaktif</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="aplikasi" class="aplikasi">
+    
+    <!-- ============================================================ -->
+    <!-- HALAMAN: LEADERBOARD -->
+    <!-- ============================================================ -->
+    <div id="halaman-leaderboard" class="halaman">
+      <div class="wadah-utama">
+        <div class="kepala-menu">
+          <h1>🏆 Papan Peringkat</h1>
+          <div class="info-pengguna">
+            <span id="nama-pengguna-lb"></span>
+            <button id="tombol-logout-lb" class="tombol-logout">Logout</button>
+          </div>
+        </div>
+
+        <div class="menu-konten">
+          <div class="tombol-navigasi">
+            <button id="tombol-ke-menu" class="tombol-sekunder">← Kembali ke Menu</button>
+          </div>
+
+          <!-- TABEL LEADERBOARD -->
+          <div class="wadah-leaderboard">
+            <div id="tabel-peringkat" class="tabel-peringkat">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="kolom-rank">Peringkat</th>
+                    <th class="kolom-nama">Nama Pemain</th>
+                    <th class="kolom-skor">Skor Tertinggi</th>
+                    <th class="kolom-email">Email</th>
+                    <th class="kolom-login">Terakhir Login</th>
+                  </tr>
+                </thead>
+                <tbody id="isi-tabel-peringkat">
+                  <tr>
+                    <td colspan="5" class="loading">Memuat peringkat...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- HALAMAN: AUTHENTIKASI (LOGIN/REGISTER) -->
+    <!-- ============================================================ -->
+    <div id="halaman-authentikasi" class="halaman aktif">
+      <div class="wadah-utama">
+        <h1>🧩 Puzzle Game</h1>
+        <p class="deskripsi">Permainan puzzle interaktif dengan gambar dari Pexels</p>
+
+        <!-- TAB NAVIGATION -->
+        <div class="tab-navigasi">
+          <button class="tab-btn aktif" data-tab="login">Login</button>
+          <button class="tab-btn" data-tab="daftar">Daftar</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="form-login" class="formulir-auth">
+          <div class="grup-input">
+            <label for="email-login">Email</label>
+            <input type="email" id="email-login" placeholder="Masukkan email Anda" required>
+          </div>
+          <div class="grup-input">
+            <label for="password-login">Password</label>
+            <input type="password" id="password-login" placeholder="Masukkan password Anda" required>
+          </div>
+          <button type="submit" class="tombol-utama">Login</button>
+          <div id="pesan-login" class="pesan"></div>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="form-daftar" class="formulir-auth tersembunyi">
+          <div class="grup-input">
+            <label for="nama-daftar">Nama Lengkap</label>
+            <input type="text" id="nama-daftar" placeholder="Masukkan nama Anda" required>
+          </div>
+          <div class="grup-input">
+            <label for="email-daftar">Email</label>
+            <input type="email" id="email-daftar" placeholder="Masukkan email Anda" required>
+          </div>
+          <div class="grup-input">
+            <label for="password-daftar">Password</label>
+            <input type="password" id="password-daftar" placeholder="Minimal 6 karakter" required>
+          </div>
+          <button type="submit" class="tombol-utama">Daftar</button>
+          <div id="pesan-daftar" class="pesan"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- HALAMAN: MENU UTAMA -->
+    <!-- ============================================================ -->
+    <div id="halaman-menu" class="halaman">
+      <div class="wadah-utama">
+        <div class="kepala-menu">
+          <h1>🧩 Puzzle Game</h1>
+          <div class="info-pengguna">
+            <span id="nama-pengguna"></span>
+            <button id="tombol-logout" class="tombol-logout">Logout</button>
+          </div>
+        </div>
+
+        <div class="menu-konten">
+          <h2>Pilih Tingkat Kesulitan</h2>
+          
+          <!-- PRESET DIFFICULTY -->
+          <div class="grid-kesulitan">
+            <button class="tombol-kesulitan" onclick="mulaiPermainan('mudah', 3)">
+              <div class="ikon">🟩</div>
+              <div>Mudah</div>
+              <small>3x3 Grid</small>
+            </button>
+            <button class="tombol-kesulitan" onclick="mulaiPermainan('sedang', 4)">
+              <div class="ikon">🟨</div>
+              <div>Sedang</div>
+              <small>4x4 Grid</small>
+            </button>
+            <button class="tombol-kesulitan" onclick="mulaiPermainan('sulit', 5)">
+              <div class="ikon">🔴</div>
+              <div>Sulit</div>
+              <small>5x5 Grid</small>
+            </button>
+          </div>
+
+          <!-- CUSTOM DIFFICULTY -->
+          <div class="bagian-custom">
+            <h3>Custom Kesulitan</h3>
+            <div class="grup-custom">
+              <label for="ukuran-custom">Ukuran Grid (2-8):</label>
+              <div class="input-custom">
+                <input type="range" id="ukuran-custom" min="2" max="8" value="3">
+                <span id="nilai-ukuran">3x3</span>
+              </div>
+              <button class="tombol-custom" onclick="mulaiPermainanCustom()">Mulai Game</button>
+            </div>
+          </div>
+
+          <!-- TOMBOL LEADERBOARD -->
+          <div class="bagian-aksi">
+            <button id="tombol-buka-leaderboard" class="tombol-leaderboard" onclick="bukaHalamanLeaderboard()">
+              🏆 Lihat Papan Peringkat
+            </button>
+          </div>
+
+          <!-- LEADERBOARD PREVIEW -->
+          <div class="bagian-papan">
+            <h3>🏆 Top 5 Pemain</h3>
+            <div id="papan-preview" class="papan-preview">
+              <p class="loading">Memuat peringkat...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- HALAMAN: PERMAINAN -->
+    <!-- ============================================================ -->
+    <div id="halaman-permainan" class="halaman">
+      <div class="wadah-permainan">
+        
+        <!-- HEADER GAME -->
+        <div class="header-game">
+          <button class="tombol-kembali" onclick="kembaliKeMenu()">← Kembali</button>
+          <h2 id="judul-game">Permainan Puzzle</h2>
+          <div class="stats-game">
+            <div class="stat">
+              <span class="label">Skor:</span>
+              <span id="tampilan-skor" class="nilai">0</span>
+            </div>
+            <div class="stat">
+              <span class="label">Waktu:</span>
+              <span id="tampilan-waktu" class="nilai">0s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GAME AREA -->
+        <div class="area-permainan">
+          <!-- IMAGE PREVIEW -->
+          <div class="bagian-gambar">
+            <img id="gambarprediksi" src="" alt="Gambar Puzzle" class="gambar-preview">
+            <div class="kontrol-gambar">
+              <button id="tombol-hint" class="tombol-hint">💡 Hint</button>
+              <button id="tombol-reset" class="tombol-reset">🔄 Reset</button>
+              <button id="tombol-selesai" class="tombol-selesai">✅ Selesai</button>
+            </div>
+          </div>
+
+          <!-- PUZZLE BOARD -->
+          <div class="bagian-puzzle">
+            <div id="papan-puzzle" class="papan-puzzle"></div>
+          </div>
+
+          <!-- TILES POOL -->
+          <div class="bagian-tiles">
+            <h3>Tile Pool</h3>
+            <div id="pool-tiles" class="pool-tiles"></div>
+          </div>
+        </div>
+
+        <!-- COMPLETION MODAL -->
+        <div id="modal-selesai" class="modal tersembunyi">
+          <div class="isi-modal">
+            <h2>🎉 Selamat!</h2>
+            <p>Anda telah menyelesaikan puzzle!</p>
+            <div class="hasil-akhir">
+              <div class="hasil-item">
+                <span class="label">Total Skor:</span>
+                <span id="hasil-skor" class="nilai-besar">0</span>
+              </div>
+              <div class="hasil-item">
+                <span class="label">Waktu:</span>
+                <span id="hasil-waktu" class="nilai-besar">0s</span>
+              </div>
+              <div class="hasil-item">
+                <span class="label">Kesulitan:</span>
+                <span id="hasil-kesulitan" class="nilai-besar">-</span>
+              </div>
+            </div>
+            <div class="tombol-modal">
+              <button onclick="tutupModalSelesai()" class="tombol-sekunder">Ulang</button>
+              <button onclick="kembaliKeMenu()" class="tombol-utama">Ke Menu</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SCRIPTS -->
+  <!-- ================================================================ -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/main.js"></script>
+  <script src="/auth.js"></script>
+  <script src="/game.js"></script>
+
+</body>
+</html>
