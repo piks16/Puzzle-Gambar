@@ -29,6 +29,7 @@
  */
 const stateGame = {
   sedangBermain: false,
+  sedangMemuatGame: false,
   idGambar: null,
   idCache: null,
   urlGambar: null,
@@ -75,9 +76,16 @@ function inisialisasiPermainan() {
  * Parameter: kesulitan (String), ukuran (Number)
  */
 async function mulaiPermainan(kesulitan, ukuran) {
+  // Cegah multiple clicks - jika sedang memuat, ignore
+  if (stateGame.sedangMemuatGame) {
+    console.log('⏳ Game masih sedang dimuat, silakan tunggu...');
+    return;
+  }
+
   console.log(`\n🎮 === MEMULAI PERMAINAN ===`);
   console.log(`Kesulitan: ${kesulitan}, Ukuran: ${ukuran}x${ukuran}`);
 
+  stateGame.sedangMemuatGame = true;
   stateGame.tingkatKesulitan = kesulitan;
   stateGame.ukuranGrid = ukuran;
 
@@ -89,10 +97,17 @@ async function mulaiPermainan(kesulitan, ukuran) {
  * Deskripsi: Mulai permainan dengan custom difficulty
  */
 async function mulaiPermainanCustom() {
+  // Cegah multiple clicks - jika sedang memuat, ignore
+  if (stateGame.sedangMemuatGame) {
+    console.log('⏳ Game masih sedang dimuat, silakan tunggu...');
+    return;
+  }
+
   const ukuran = parseInt(document.getElementById('ukuran-custom').value);
   console.log(`\n🎮 === MEMULAI PERMAINAN CUSTOM ===`);
   console.log(`Ukuran: ${ukuran}x${ukuran}`);
 
+  stateGame.sedangMemuatGame = true;
   stateGame.tingkatKesulitan = 'custom';
   stateGame.ukuranGrid = ukuran;
 
@@ -114,6 +129,7 @@ async function muatGambarDanMulai() {
     if (!data.sukses) {
       console.error('❌ Gagal mengambil gambar:', data.pesan);
       alert('Gagal memuat gambar. Silakan coba lagi.');
+      stateGame.sedangMemuatGame = false; // Error, reset flag
       return;
     }
 
@@ -140,15 +156,18 @@ async function muatGambarDanMulai() {
       console.log(`   ℹ️  Gambar sudah di-crop ke square di server`);
       generatePuzzle(stateGame.urlGambar);
       mulaiTimer();
+      stateGame.sedangMemuatGame = false; // Selesai memuat, enable tombol lagi
     };
 
     gambar.onerror = () => {
       console.error('❌ Gambar gagal dimuat');
       alert('Gambar gagal dimuat. Silakan coba lagi.');
+      stateGame.sedangMemuatGame = false; // Error, reset flag
     };
   } catch (kesalahan) {
     console.error('❌ Kesalahan memuat gambar:', kesalahan);
     alert('Terjadi kesalahan. Silakan coba lagi.');
+    stateGame.sedangMemuatGame = false; // Error, reset flag
   }
 }
 
@@ -443,9 +462,10 @@ function handleDrop(event, slotIndex) {
 
     // Hapus tile dari pool
     tileYangDiDrag.classList.add('ditempatkan');
+    tileYangDiDrag.style.display = 'none'; // Hilangkan tile dari tampilan
 
     // Update layout
-    stateGame.layoutSlot[slotIndex] = tileIndex;
+    stateGame.layoutSlot[slotIndex] = tile.index;
 
     // Tambah skor
     const skorTambah = 10;
