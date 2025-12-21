@@ -15,6 +15,134 @@
 // ================================================================
 
 const URL_API = '/api';
+let socket = null;
+
+// ================================================================
+// 1.5 SOCKET.IO SETUP
+// ================================================================
+
+/**
+ * Fungsi: setupSocketIO
+ * Deskripsi: Setup koneksi socket dan event listeners untuk real-time updates
+ */
+function setupSocketIO() {
+  socket = io();
+
+  // Koneksi berhasil
+  socket.on('connect', () => {
+    console.log('✅ Socket.IO terhubung');
+    
+    // Emit user login event
+    const namaUser = localStorage.getItem('namaUser');
+    const emailUser = localStorage.getItem('emailUser');
+    if (namaUser && emailUser) {
+      socket.emit('user-login', { nama: namaUser, email: emailUser });
+    }
+  });
+
+  // Update jumlah user online
+  socket.on('user-online-count', (data) => {
+    const elemOnline = document.getElementById('online-count');
+    if (elemOnline) {
+      elemOnline.textContent = `👥 ${data.onlineCount} pemain online`;
+    }
+    console.log(`👥 Online: ${data.onlineCount} pemain`);
+  });
+
+  // Listen ke update leaderboard real-time
+  socket.on('leaderboard-update', (data) => {
+    console.log(`🎮 Leaderboard update: ${data.message}`);
+    
+    // Tampilkan notifikasi
+    showGameCompletionNotification(data);
+    
+    // Auto-refresh leaderboard
+    loadPapaanPreview();
+    if (document.getElementById('isi-tabel-peringkat')) {
+      loadLeaderboardLengkap();
+    }
+  });
+
+  // Error koneksi
+  socket.on('connect_error', (error) => {
+    console.error('❌ Socket.IO error:', error);
+  });
+
+  // Disconnect
+  socket.on('disconnect', () => {
+    console.log('❌ Socket.IO terputus');
+  });
+}
+
+/**
+ * Fungsi: showGameCompletionNotification
+ * Deskripsi: Tampilkan notifikasi ketika user lain selesai game
+ */
+function showGameCompletionNotification(data) {
+  const notif = document.createElement('div');
+  notif.className = 'notifikasi-game-completion';
+  notif.innerHTML = `
+    <div class="notif-content">
+      <span class="notif-message">${data.message}</span>
+    </div>
+  `;
+  
+  document.body.appendChild(notif);
+  
+  setTimeout(() => {
+    notif.remove();
+  }, 5000);
+}
+
+/**
+ * Fungsi: emitSkorKeSocket
+ * Deskripsi: Emit score ke server via socket
+ */
+function emitSkorKeSocket(data) {
+  if (socket && socket.connected) {
+    socket.emit('skor-disimpan', data);
+    console.log('📨 Skor dikirim via socket');
+  } else {
+    console.warn('⚠️ Socket tidak terhubung');
+  }
+}
+
+// ================================================================
+// 1.6 REFRESH HANDLER
+// ================================================================
+
+/**
+ * Event listener untuk mendeteksi refresh halaman
+ * Menampilkan konfirmasi kepada user sebelum refresh
+ */
+window.addEventListener('beforeunload', (e) => {
+  const sesiId = localStorage.getItem('sesiId');
+  
+  // Hanya tampilkan warning jika user sudah login (ada sesiId)
+  if (sesiId) {
+    const message = 'Anda akan kembali ke menu awal dan harus login ulang apakah mau melanjutkan?';
+    e.preventDefault();
+    e.returnValue = message;
+    return message;
+  }
+});
+
+/**
+ * Event listener untuk menangani unload halaman
+ * Jika user confirm refresh saat sedang login, hapus session
+ */
+window.addEventListener('unload', () => {
+  const sesiId = localStorage.getItem('sesiId');
+  
+  // Jika ada sesiId saat unload, berarti user melanjutkan refresh
+  // Hapus session data
+  if (sesiId) {
+    localStorage.removeItem('sesiId');
+    localStorage.removeItem('namaUser');
+    localStorage.removeItem('emailUser');
+    console.log('🔓 Session dihapus karena refresh');
+  }
+});
 
 // ================================================================
 // 2. PAGE VISIBILITY TOGGLE
@@ -76,8 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Setup keyboard shortcuts
   setupKeyboardShortcuts();
 
-  // Load leaderboard preview saat menu dimuat
+  // Load leaderboard preview
   loadPapaanPreview();
+
+  // Setup Socket.IO
+  setupSocketIO();
 });
 
 async function handleLogout() {
@@ -160,20 +291,30 @@ async function loadPapaanPreview() {
       if (!preview) return;
 
       const top5 = result.data.slice(0, 5);
-      let html = '<ol class="daftar-peringkat">';
+      let html = `
+        <div class="tabel-preview-peringkat">
+          <div class="header-preview">
+            <div class="kolom-preview rank">Rank</div>
+            <div class="kolom-preview username">Username</div>
+            <div class="kolom-preview point">Point</div>
+            <div class="kolom-preview waktu">Waktu</div>
+          </div>
+      `;
 
-      top5.forEach((pemain, index) => {
-        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+      top5.forEach((game, index) => {
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+        const waktuText = game.waktu_detik ? `${game.waktu_detik}s` : '-';
         html += `
-          <li class="item-peringkat">
-            <span class="medal">${medal}</span>
-            <span class="nama">${pemain.nama}</span>
-            <span class="skor">${pemain.total_skor} pts</span>
-          </li>
+          <div class="baris-preview">
+            <div class="kolom-preview rank">${medal}</div>
+            <div class="kolom-preview username">${game.nama_pemain}</div>
+            <div class="kolom-preview point">${game.skor}</div>
+            <div class="kolom-preview waktu">${waktuText}</div>
+          </div>
         `;
       });
 
-      html += '</ol>';
+      html += '</div>';
       preview.innerHTML = html;
     } else {
       const preview = document.getElementById('papan-preview');
@@ -207,7 +348,7 @@ function bukaHalamanLeaderboard() {
 
 /**
  * Fungsi: loadLeaderboardLengkap
- * Deskripsi: Load dan tampilkan top 10 pemain di tabel
+ * Deskripsi: Load dan tampilkan semua game yang dimainkan diurutkan dari skor tertinggi
  */
 async function loadLeaderboardLengkap() {
   try {
@@ -215,7 +356,7 @@ async function loadLeaderboardLengkap() {
     if (!isiTabel) return;
 
     // Show loading
-    isiTabel.innerHTML = '<tr><td colspan="5" class="loading">Memuat peringkat...</td></tr>';
+    isiTabel.innerHTML = '<tr><td colspan="6" class="loading">Memuat peringkat...</td></tr>';
 
     const response = await fetch(`${URL_API}/papan-peringkat`);
     const result = await response.json();
@@ -223,32 +364,41 @@ async function loadLeaderboardLengkap() {
     if (result.sukses && result.data.length > 0) {
       let html = '';
 
-      result.data.forEach((pemain, index) => {
-        const tglLogin = pemain.terakhir_login 
-          ? new Date(pemain.terakhir_login).toLocaleDateString('id-ID')
-          : 'Belum login';
+      result.data.forEach((game) => {
+        const tanggal = game.tanggal 
+          ? new Date(game.tanggal).toLocaleDateString('id-ID', { 
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit'
+            })
+          : '-';
+        
+        const kesulitan = game.tingkat_kesulitan.charAt(0).toUpperCase() + game.tingkat_kesulitan.slice(1);
 
         html += `
           <tr>
-            <td class="kolom-rank">${index + 1}</td>
-            <td class="kolom-nama">${pemain.nama}</td>
-            <td class="kolom-skor">${pemain.total_skor} pts</td>
-            <td class="kolom-email">${pemain.email}</td>
-            <td class="kolom-login">${tglLogin}</td>
+            <td class="kolom-rank">${game.rank}</td>
+            <td class="kolom-nama">${game.nama_pemain}</td>
+            <td class="kolom-skor">${game.skor} pts</td>
+            <td class="kolom-waktu">${game.waktu_detik}s</td>
+            <td class="kolom-kesulitan">${kesulitan} (${game.ukuran_grid}x${game.ukuran_grid})</td>
+            <td class="kolom-tanggal">${tanggal}</td>
           </tr>
         `;
       });
 
       isiTabel.innerHTML = html;
-      console.log('✅ Leaderboard dimuat: ' + result.data.length + ' pemain');
+      console.log('✅ Leaderboard dimuat: ' + result.data.length + ' game');
     } else {
-      isiTabel.innerHTML = '<tr><td colspan="5" class="kosong">Belum ada data pemain</td></tr>';
+      isiTabel.innerHTML = '<tr><td colspan="6" class="kosong">Belum ada data game</td></tr>';
     }
   } catch (error) {
     console.error('❌ Error load leaderboard:', error);
     const isiTabel = document.getElementById('isi-tabel-peringkat');
     if (isiTabel) {
-      isiTabel.innerHTML = '<tr><td colspan="5" class="kosong">Gagal memuat peringkat</td></tr>';
+      isiTabel.innerHTML = '<tr><td colspan="6" class="kosong">Gagal memuat peringkat</td></tr>';
     }
   }
 }
@@ -261,3 +411,5 @@ window.formatWaktu = formatWaktu;
 window.bukaHalamanLeaderboard = bukaHalamanLeaderboard;
 window.loadLeaderboardLengkap = loadLeaderboardLengkap;
 window.loadPapaanPreview = loadPapaanPreview;
+window.emitSkorKeSocket = emitSkorKeSocket;
+window.setupSocketIO = setupSocketIO;

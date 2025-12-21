@@ -244,8 +244,41 @@ async function cropGambarMenjadiBujurSangkar(urlGambar) {
 io.on('connection', (soket) => {
   console.log(`🔗 User terhubung: ${soket.id}`);
 
+  // Kirim jumlah user online ke semua client
+  io.emit('user-online-count', { onlineCount: io.engine.clientsCount });
+
+  /**
+   * Event: user-login
+   * Diterima ketika user login dan socket terhubung
+   */
+  soket.on('user-login', (dataUser) => {
+    soket.namaUser = dataUser.nama;
+    soket.emailUser = dataUser.email;
+    console.log(`👤 ${dataUser.nama} login via socket`);
+    io.emit('user-online-count', { onlineCount: io.engine.clientsCount });
+  });
+
+  /**
+   * Event: skor-disimpan
+   * Diterima dari client saat user selesai game
+   * Broadcast ke semua client untuk update leaderboard realtime
+   */
+  soket.on('skor-disimpan', (dataGame) => {
+    console.log(`🎮 Skor baru: ${dataGame.nama_pemain} - ${dataGame.skor} poin`);
+    
+    // Broadcast ke semua client
+    io.emit('leaderboard-update', {
+      nama_pemain: dataGame.nama_pemain,
+      skor: dataGame.skor,
+      waktu_detik: dataGame.waktu_detik,
+      tingkat_kesulitan: dataGame.tingkat_kesulitan,
+      message: `🎮 ${dataGame.nama_pemain} selesai ${dataGame.tingkat_kesulitan} dengan skor ${dataGame.skor}!`
+    });
+  });
+
   soket.on('disconnect', () => {
     console.log(`🔌 User terputus: ${soket.id}`);
+    io.emit('user-online-count', { onlineCount: io.engine.clientsCount });
   });
 });
 
@@ -274,12 +307,34 @@ aplikasi.post('/api/daftar', async (req, res) => {
     const { nama, email, password } = req.body;
 
     console.log('\n📝 === REGISTRASI ===');
-    console.log(`Email: ${email}`);
+    console.log(`Email: ${email}, Nama: ${nama}`);
 
     if (!nama || !email || !password) {
       return res.status(400).json({
         sukses: false,
         pesan: 'Nama, email, dan password harus diisi'
+      });
+    }
+
+    // Cek apakah nama sudah terdaftar
+    const { data: penggunaNama, error: kesalahanNama } = await databaseSupabase
+      .from('pengguna')
+      .select('*')
+      .eq('nama', nama);
+
+    if (kesalahanNama) {
+      console.error('❌ Kesalahan database:', kesalahanNama.message);
+      return res.status(500).json({
+        sukses: false,
+        pesan: 'Kesalahan database'
+      });
+    }
+
+    if (penggunaNama.length > 0) {
+      console.log('❌ Nama sudah terdaftar');
+      return res.status(400).json({
+        sukses: false,
+        pesan: 'Nama/username sudah terdaftar, gunakan nama lain'
       });
     }
 
@@ -590,17 +645,26 @@ aplikasi.post('/api/simpan-skor', async (req, res) => {
 
 /**
  * RUTE: GET /api/papan-peringkat
- * Deskripsi: Ambil top 10 pemain dengan skor tertinggi
+ * Deskripsi: Ambil semua game yang dimainkan diurutkan dari skor tertinggi ke terendah
+ * Pengurutan: Berdasarkan skor DESC, kemudian waktu DESC
  */
 aplikasi.get('/api/papan-peringkat', async (req, res) => {
   try {
-    console.log('\n🏆 === AMBIL PAPAN PERINGKAT ===');
+    console.log('\n🏆 === AMBIL PAPAN PERINGKAT (SEMUA GAME) ===');
 
-    const { data: peringkat, error: kesalahan } = await databaseSupabase
-      .from('pengguna')
-      .select('id, nama, total_skor, terakhir_login')
-      .order('total_skor', { ascending: false })
-      .limit(10);
+    // Query untuk mendapatkan SEMUA record game dari skor_permainan beserta nama pemain
+    const { data: semuaGame, error: kesalahan } = await databaseSupabase
+      .from('skor_permainan')
+      .select(`
+        id,
+        skor,
+        waktu_detik,
+        tingkat_kesulitan,
+        tanggal,
+        ukuran_grid,
+        pengguna(id, nama, email)
+      `)
+      .order('skor', { ascending: false });
 
     if (kesalahan) {
       console.error('❌ Kesalahan ambil peringkat:', kesalahan.message);
@@ -610,12 +674,26 @@ aplikasi.get('/api/papan-peringkat', async (req, res) => {
       });
     }
 
-    console.log(`✅ Peringkat diambil: ${peringkat.length} pemain`);
+    // Process data untuk format yang lebih rapi
+    const peringkatProsesed = semuaGame.map((game, index) => {
+      return {
+        rank: index + 1,
+        nama_pemain: game.pengguna?.nama || 'Unknown',
+        email_pemain: game.pengguna?.email || '-',
+        skor: game.skor,
+        waktu_detik: game.waktu_detik,
+        tingkat_kesulitan: game.tingkat_kesulitan,
+        ukuran_grid: game.ukuran_grid,
+        tanggal: game.tanggal
+      };
+    });
+
+    console.log(`✅ Peringkat diambil: ${peringkatProsesed.length} game`);
 
     res.json({
       sukses: true,
       pesan: 'Peringkat berhasil diambil',
-      data: peringkat
+      data: peringkatProsesed
     });
   } catch (kesalahan) {
     console.error('❌ Kesalahan papan peringkat:', kesalahan);

@@ -18,6 +18,24 @@ document.addEventListener('DOMContentLoaded', () => {
   inisialisasiAuthentikasi();
 });
 
+/**
+ * Fungsi: mulaiDariIntro
+ * Deskripsi: Navigasi dari halaman intro ke halaman authentikasi
+ */
+function mulaiDariIntro() {
+  tampilkanHalaman('authentikasi');
+  console.log('📖 Navigasi dari intro ke authentikasi');
+}
+
+/**
+ * Fungsi: kembaliKeIntro
+ * Deskripsi: Navigasi kembali dari halaman authentikasi ke halaman intro
+ */
+function kembaliKeIntro() {
+  tampilkanHalaman('intro');
+  console.log('📖 Kembali ke halaman intro');
+}
+
 function inisialisasiAuthentikasi() {
   console.log('🔐 Menginisialisasi modul authentikasi...');
 
@@ -202,17 +220,21 @@ function cekSesiAda() {
   if (sesiId) {
     console.log('✅ Session ditemukan, redirect ke menu...');
     tampilkanHalamanMenu();
+  } else {
+    console.log('❌ Tidak ada session, tampilkan halaman intro...');
+    // Jika tidak ada sesi, tampilkan halaman intro
+    // Ini terjadi saat pertama kali membuka atau setelah refresh/logout
+    tampilkanHalaman('intro');
   }
 }
 
 function tampilkanHalamanMenu() {
-  const halamanAuth = document.getElementById('halaman-authentikasi');
-  const halamanMenu = document.getElementById('halaman-menu');
-
-  if (halamanAuth) halamanAuth.classList.remove('aktif');
-  if (halamanMenu) halamanMenu.classList.add('aktif');
+  tampilkanHalaman('menu');
 
   const namaUser = localStorage.getItem('namaUser');
   const elemen = document.getElementById('nama-pengguna');
   if (elemen) elemen.textContent = `👤 ${namaUser}`;
+
+  // Load leaderboard preview
+  loadPapaanPreview();
 }

@@ -10,6 +10,48 @@
   <div id="aplikasi" class="aplikasi">
     
     <!-- ============================================================ -->
+    <!-- HALAMAN: INTRO / LANDING PAGE -->
+    <!-- ============================================================ -->
+    <div id="halaman-intro" class="halaman aktif">
+      <div class="wadah-intro">
+        <div class="konten-intro">
+          <div class="logo-intro">🧩</div>
+          <h1 class="judul-intro">Puzzle Game</h1>
+          <p class="deskripsi-intro">
+            Selamat datang di permainan puzzle interaktif yang menantang!
+          </p>
+          <p class="deskripsi-detail">
+            Mainkan puzzle dengan gambar-gambar menarik dari berbagai tema. 
+            Pilih tingkat kesulitan sesuai kemampuan Anda dan tunjukkan skill puzzle-mu!
+          </p>
+          
+          <div class="fitur-list">
+            <div class="fitur-item">
+              <span class="fitur-icon">⭐</span>
+              <span class="fitur-text">Berbagai Tingkat Kesulitan</span>
+            </div>
+            <div class="fitur-item">
+              <span class="fitur-icon">🎨</span>
+              <span class="fitur-text">Gambar Berkualitas Tinggi</span>
+            </div>
+            <div class="fitur-item">
+              <span class="fitur-icon">🏆</span>
+              <span class="fitur-text">Papan Peringkat & Skor</span>
+            </div>
+            <div class="fitur-item">
+              <span class="fitur-icon">⏱️</span>
+              <span class="fitur-text">Waktu Bermain Real-time</span>
+            </div>
+          </div>
+
+          <button class="tombol-mulai" onclick="mulaiDariIntro()">
+            Mulai Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ============================================================ -->
     <!-- HALAMAN: LEADERBOARD -->
     <!-- ============================================================ -->
     <div id="halaman-leaderboard" class="halaman">
@@ -35,14 +77,15 @@
                   <tr>
                     <th class="kolom-rank">Peringkat</th>
                     <th class="kolom-nama">Nama Pemain</th>
-                    <th class="kolom-skor">Skor Tertinggi</th>
-                    <th class="kolom-email">Email</th>
-                    <th class="kolom-login">Terakhir Login</th>
+                    <th class="kolom-skor">Skor</th>
+                    <th class="kolom-waktu">Waktu</th>
+                    <th class="kolom-kesulitan">Kesulitan</th>
+                    <th class="kolom-tanggal">Tanggal</th>
                   </tr>
                 </thead>
                 <tbody id="isi-tabel-peringkat">
                   <tr>
-                    <td colspan="5" class="loading">Memuat peringkat...</td>
+                    <td colspan="6" class="loading">Memuat peringkat...</td>
                   </tr>
                 </tbody>
               </table>
@@ -55,8 +98,10 @@
     <!-- ============================================================ -->
     <!-- HALAMAN: AUTHENTIKASI (LOGIN/REGISTER) -->
     <!-- ============================================================ -->
-    <div id="halaman-authentikasi" class="halaman aktif">
+    <div id="halaman-authentikasi" class="halaman">
       <div class="wadah-utama">
+        <button class="tombol-kembali-intro" onclick="kembaliKeIntro()">← Kembali</button>
+        
         <h1>🧩 Puzzle Game</h1>
         <p class="deskripsi">Permainan puzzle interaktif dengan gambar dari Pexels</p>
 
@@ -157,7 +202,10 @@
 
           <!-- LEADERBOARD PREVIEW -->
           <div class="bagian-papan">
-            <h3>🏆 Top 5 Pemain</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3>🏆 Peringkat Teratas</h3>
+              <span id="online-count">👥 0 pemain online</span>
+            </div>
             <div id="papan-preview" class="papan-preview">
               <p class="loading">Memuat peringkat...</p>
             </div>

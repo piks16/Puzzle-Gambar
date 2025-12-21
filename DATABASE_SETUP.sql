@@ -19,12 +19,23 @@
  */
 
 -- ================================================================
+-- 0. DROP EXISTING OBJECTS (CLEAN SLATE)
+-- ================================================================
+-- Deskripsi: Hapus semua view dan table yang sudah ada sebelumnya
+
+DROP VIEW IF EXISTS papan_peringkat_top10;
+DROP VIEW IF EXISTS statistik_user;
+DROP VIEW IF EXISTS statistik_difficulty;
+DROP TABLE IF EXISTS skor_permainan;
+DROP TABLE IF EXISTS pengguna;
+
+-- ================================================================
 -- 1. CREATE TABLE: pengguna
 -- ================================================================
 -- Deskripsi: Tabel untuk menyimpan data user
 -- Kolom:
 --   - id: Primary key auto-increment
---   - nama: Nama lengkap user
+--   - nama: Nama lengkap user (UNIQUE)
 --   - email: Email unik user (unique constraint)
 --   - password: Password user (dalam prod, harus di-hash!)
 --   - total_skor: Total skor akumulatif user
@@ -33,7 +44,7 @@
 
 CREATE TABLE IF NOT EXISTS pengguna (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  nama VARCHAR(255) NOT NULL,
+  nama VARCHAR(255) UNIQUE NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
   total_skor INTEGER DEFAULT 0,
@@ -44,10 +55,11 @@ CREATE TABLE IF NOT EXISTS pengguna (
 );
 
 -- ================================================================
--- 2. CREATE INDEX: pengguna (email)
+-- 2. CREATE INDEX: pengguna (email, nama)
 -- ================================================================
--- Deskripsi: Index untuk mempercepat query by email
+-- Deskripsi: Index untuk mempercepat query by email dan nama
 CREATE INDEX idx_pengguna_email ON pengguna(email);
+CREATE INDEX idx_pengguna_nama ON pengguna(nama);
 
 -- ================================================================
 -- 3. CREATE TABLE: skor_permainan
@@ -81,59 +93,7 @@ CREATE INDEX idx_skor_id_pengguna ON skor_permainan(id_pengguna);
 CREATE INDEX idx_skor_tanggal ON skor_permainan(tanggal DESC);
 
 -- ================================================================
--- 5. CREATE VIEW: papan_peringkat_top10
--- ================================================================
--- Deskripsi: View untuk menampilkan top 10 pemain dengan skor tertinggi
-CREATE OR REPLACE VIEW papan_peringkat_top10 AS
-SELECT 
-  p.id,
-  p.nama,
-  p.email,
-  p.total_skor,
-  COUNT(sp.id) as jumlah_permainan,
-  AVG(sp.waktu_detik) as rata_rata_waktu,
-  p.terakhir_login
-FROM pengguna p
-LEFT JOIN skor_permainan sp ON p.id = sp.id_pengguna
-GROUP BY p.id, p.nama, p.email, p.total_skor, p.terakhir_login
-ORDER BY p.total_skor DESC
-LIMIT 10;
-
--- ================================================================
--- 6. CREATE VIEW: statistik_user
--- ================================================================
--- Deskripsi: View untuk statistik per user
-CREATE OR REPLACE VIEW statistik_user AS
-SELECT 
-  p.id,
-  p.nama,
-  p.email,
-  p.total_skor,
-  COUNT(sp.id) as jumlah_permainan,
-  AVG(sp.skor) as rata_rata_skor,
-  MAX(sp.skor) as skor_tertinggi,
-  AVG(sp.waktu_detik) as rata_rata_waktu
-FROM pengguna p
-LEFT JOIN skor_permainan sp ON p.id = sp.id_pengguna
-GROUP BY p.id, p.nama, p.email, p.total_skor;
-
--- ================================================================
--- 7. CREATE VIEW: statistik_difficulty
--- ================================================================
--- Deskripsi: View untuk statistik permainan per level kesulitan
-CREATE OR REPLACE VIEW statistik_difficulty AS
-SELECT 
-  tingkat_kesulitan,
-  COUNT(id) as jumlah_permainan,
-  AVG(skor) as rata_rata_skor,
-  MAX(skor) as skor_tertinggi,
-  MIN(skor) as skor_terendah,
-  AVG(waktu_detik) as rata_rata_waktu
-FROM skor_permainan
-GROUP BY tingkat_kesulitan;
-
--- ================================================================
--- 8. SAMPLE DATA (OPTIONAL)
+-- 5. SAMPLE DATA (OPTIONAL)
 -- ================================================================
 -- Uncomment untuk insert sample data untuk testing
 
@@ -169,7 +129,7 @@ GROUP BY tingkat_kesulitan;
 -- USING (true);
 
 -- ================================================================
--- 10. QUERIES USEFUL
+-- 6. QUERIES USEFUL
 -- ================================================================
 
 -- Query 1: Ambil semua user

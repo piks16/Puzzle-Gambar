@@ -85,6 +85,12 @@ async function mulaiPermainan(kesulitan, ukuran) {
   console.log(`\n🎮 === MEMULAI PERMAINAN ===`);
   console.log(`Kesulitan: ${kesulitan}, Ukuran: ${ukuran}x${ukuran}`);
 
+  // Sembunyikan modal selesai jika ada
+  const modal = document.getElementById('modal-selesai');
+  if (modal) {
+    modal.classList.add('tersembunyi');
+  }
+
   stateGame.sedangMemuatGame = true;
   stateGame.tingkatKesulitan = kesulitan;
   stateGame.ukuranGrid = ukuran;
@@ -106,6 +112,12 @@ async function mulaiPermainanCustom() {
   const ukuran = parseInt(document.getElementById('ukuran-custom').value);
   console.log(`\n🎮 === MEMULAI PERMAINAN CUSTOM ===`);
   console.log(`Ukuran: ${ukuran}x${ukuran}`);
+
+  // Sembunyikan modal selesai jika ada
+  const modal = document.getElementById('modal-selesai');
+  if (modal) {
+    modal.classList.add('tersembunyi');
+  }
 
   stateGame.sedangMemuatGame = true;
   stateGame.tingkatKesulitan = 'custom';
@@ -154,6 +166,12 @@ async function muatGambarDanMulai() {
       console.log(`✅ Gambar berhasil dimuat ke browser`);
       console.log(`   Ukuran gambar di-load: ${gambar.width}x${gambar.height}px`);
       console.log(`   ℹ️  Gambar sudah di-crop ke square di server`);
+      
+      // Reset timer sebelum mulai game baru
+      stopTimer();
+      stateGame.waktuDetik = 0;
+      updateDisplayWaktu();
+      
       generatePuzzle(stateGame.urlGambar);
       mulaiTimer();
       stateGame.sedangMemuatGame = false; // Selesai memuat, enable tombol lagi
@@ -541,37 +559,62 @@ function resetPermainan() {
 
 /**
  * Fungsi: berikanHint
- * Deskripsi: Berikan hint dengan menunjukkan slot kosong random
+ * Deskripsi: Berikan hint dengan menunjukkan slot kosong pertama dan tile yang sesuai
  */
 function berikanHint() {
   console.log('💡 === HINT ===');
 
-  // Cari slot kosong
-  const slotKosong = [];
+  // Cari slot kosong PERTAMA (bukan random)
+  let slotIndex = -1;
   for (let i = 0; i < stateGame.layoutSlot.length; i++) {
     if (stateGame.layoutSlot[i] === null) {
-      slotKosong.push(i);
+      slotIndex = i;
+      break; // Ambil yang pertama saja
     }
   }
 
-  if (slotKosong.length === 0) {
+  if (slotIndex === -1) {
     console.log('❌ Tidak ada slot kosong');
     return;
   }
 
-  // Pilih slot random
-  const slotIndex = slotKosong[Math.floor(Math.random() * slotKosong.length)];
+  // Slot kosong sudah ditemukan (slotIndex)
   const slot = document.getElementById(`slot-${slotIndex}`);
 
-  // Highlight slot
-  slot.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.8)';
+  // Cari tile yang SESUAI dengan slot ini
+  // Tile yang sesuai adalah tile yang memiliki index sama dengan slotIndex
+  // (karena tiles sudah di-shuffle, harus cari dalam array)
+  const tileYangSesuai = stateGame.tiles.find(tile => tile.index === slotIndex);
+  
+  if (!tileYangSesuai) {
+    console.log('❌ Tile yang sesuai tidak ditemukan');
+    return;
+  }
 
-  console.log(`💡 Hint: Slot ${slotIndex} kosong`);
+  const tileElement = document.getElementById(tileYangSesuai.id);
 
-  // Remove highlight setelah 2 detik
+  // Highlight slot dengan border dan glow
+  slot.style.border = '3px solid #10b981';
+  slot.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.9), inset 0 0 20px rgba(16, 185, 129, 0.4)';
+
+  // Highlight tile di pool
+  if (tileElement && !tileElement.style.display || tileElement.style.display !== 'none') {
+    tileElement.style.border = '3px solid #10b981';
+    tileElement.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.9)';
+  }
+
+  console.log(`💡 Hint: Slot ${slotIndex} kosong → Tile ${tileYangSesuai.index} yang sesuai`);
+
+  // Remove highlight setelah 3 detik
+  const durasi = 3000;
   setTimeout(() => {
-    slot.style.boxShadow = 'none';
-  }, 2000);
+    slot.style.border = '';
+    slot.style.boxShadow = '';
+    if (tileElement) {
+      tileElement.style.border = '';
+      tileElement.style.boxShadow = '';
+    }
+  }, durasi);
 }
 
 /**
@@ -687,7 +730,12 @@ async function simpanSkorKeDatabse() {
   try {
     console.log('💾 Menyimpan skor ke database...');
 
-    const sesiId = dataSession.sesiId;
+    const sesiId = localStorage.getItem('sesiId');
+
+    if (!sesiId) {
+      console.error('❌ Sesi ID tidak ditemukan');
+      return;
+    }
 
     const respons = await fetch(`${URL_API}/simpan-skor`, {
       method: 'POST',
@@ -706,6 +754,23 @@ async function simpanSkorKeDatabse() {
 
     if (data.sukses) {
       console.log('✅ Skor berhasil disimpan');
+      
+      // Emit socket event untuk real-time leaderboard update
+      const namaUser = localStorage.getItem('namaUser');
+      if (window.emitSkorKeSocket) {
+        window.emitSkorKeSocket({
+          nama_pemain: namaUser,
+          skor: stateGame.skor,
+          waktu_detik: stateGame.waktuDetik,
+          tingkat_kesulitan: stateGame.tingkatKesulitan
+        });
+      }
+      
+      // Update peringkat teratas di menu
+      if (window.loadPapaanPreview) {
+        console.log('🔄 Mengupdate peringkat teratas...');
+        window.loadPapaanPreview();
+      }
     } else {
       console.error('❌ Gagal simpan skor:', data.pesan);
     }

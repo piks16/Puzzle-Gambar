@@ -105,14 +105,14 @@ small {
 }
 
 .halaman {
-  display: none;
+  display: none !important;
   width: 100%;
   min-height: 100vh;
   animation: fadeIn 0.5s ease-in-out;
 }
 
 .halaman.aktif {
-  display: block;
+  display: block !important;
 }
 
 @keyframes fadeIn {
@@ -135,6 +135,7 @@ small {
   flex-direction: column;
   justify-content: center;
   min-height: 100vh;
+  position: relative;
 }
 
 .wadah-permainan {
@@ -148,10 +149,151 @@ small {
 }
 
 /* ================================================================
+   3.5 INTRO PAGE
+   ================================================================ */
+#halaman-intro {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wadah-intro {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.konten-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+}
+
+.logo-intro {
+  font-size: 5rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.judul-intro {
+  font-size: 3rem;
+  margin: 0;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.deskripsi-intro {
+  font-size: 1.25rem;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 600;
+}
+
+.deskripsi-detail {
+  font-size: 1rem;
+  color: #ffffff;
+  line-height: 1.8;
+  max-width: 500px;
+}
+
+.fitur-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.fitur-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: rgba(99, 102, 241, 0.1);
+  border: 2px solid var(--warna-border);
+  border-radius: 12px;
+  transition: var(--transisi-standar);
+}
+
+.fitur-item:hover {
+  border-color: var(--warna-primer);
+  background: rgba(99, 102, 241, 0.2);
+  transform: translateY(-5px);
+}
+
+.fitur-icon {
+  font-size: 2rem;
+}
+
+.fitur-text {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.tombol-mulai {
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-base);
+  background: linear-gradient(135deg, var(--warna-primer), var(--warna-sekunder));
+  color: white;
+  cursor: pointer;
+  transition: var(--transisi-standar);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+  margin-top: 1rem;
+}
+
+.tombol-mulai:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+}
+
+.tombol-mulai:active {
+  transform: translateY(0);
+}
+
+/* ================================================================
    4. AUTHENTICATION PAGE
    ================================================================ */
 #halaman-authentikasi {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.tombol-kembali-intro {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  background: transparent;
+  color: var(--warna-primer);
+  border: 2px solid var(--warna-primer);
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: var(--transisi-standar);
+}
+
+.tombol-kembali-intro:hover {
+  background: rgba(99, 102, 241, 0.1);
+  transform: translateX(-3px);
 }
 
 .deskripsi {
@@ -456,6 +598,14 @@ small {
   border: 1px solid var(--warna-border);
 }
 
+.bagian-papan h3 {
+  color: #000000;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
 .papan-preview {
   display: flex;
   flex-direction: column;
@@ -516,6 +666,75 @@ small {
   color: var(--warna-sukses);
   min-width: 80px;
   text-align: right;
+}
+
+/* Tabel Preview Peringkat */
+.tabel-preview-peringkat {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--warna-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--warna-bg-sekunder);
+}
+
+.header-preview {
+  display: grid;
+  grid-template-columns: 40px 1fr 80px 80px;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--warna-primer);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-bottom: 2px solid var(--warna-border);
+}
+
+.baris-preview {
+  display: grid;
+  grid-template-columns: 40px 1fr 80px 80px;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--warna-border);
+  align-items: center;
+  transition: var(--transisi-standar);
+}
+
+.baris-preview:last-child {
+  border-bottom: none;
+}
+
+.baris-preview:hover {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.kolom-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kolom-preview.rank {
+  font-weight: 700;
+  color: var(--warna-primer);
+  justify-content: flex-start;
+}
+
+.kolom-preview.username {
+  justify-content: flex-start;
+  font-weight: 500;
+}
+
+.kolom-preview.point {
+  justify-content: flex-end;
+  font-weight: 600;
+  color: var(--warna-sukses);
+}
+
+.kolom-preview.waktu {
+  justify-content: flex-end;
+  color: var(--warna-info);
 }
 
 .papan-preview .item-papan {
@@ -905,6 +1124,13 @@ small {
   color: var(--warna-sukses);
 }
 
+/* Waktu tercepat */
+.kolom-waktu {
+  text-align: center;
+  font-weight: 500;
+  color: var(--warna-info);
+}
+
 /* Nama pemain */
 .kolom-nama {
   font-weight: 500;
@@ -998,6 +1224,20 @@ small {
   .kolom-rank {
     width: 60px;
   }
+
+  /* Responsive untuk tabel preview */
+  .header-preview,
+  .baris-preview {
+    grid-template-columns: 35px 1fr 60px 60px;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .kolom-preview.point,
+  .kolom-preview.waktu {
+    font-size: 0.85rem;
+  }
 }
 
 /* ================================================================
@@ -1085,4 +1325,66 @@ small {
     --warna-teks: #1a1a1a;
     --warna-teks-sekunder: #666666;
   }
+}
+
+/* ================================================================
+   NOTIFIKASI GAME COMPLETION
+   ================================================================ */
+
+.notifikasi-game-completion {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+.notif-content {
+  background: linear-gradient(135deg, var(--warna-sukses), #20c997);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notif-message {
+  flex: 1;
+}
+
+/* Online Count Display */
+#online-count {
+  display: inline-block;
+  background: var(--warna-info);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 12px;
 }
