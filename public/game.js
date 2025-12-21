@@ -40,7 +40,10 @@ const stateGame = {
   tiles: [], // Array berisi data tile (id, posisi, background-position, background-size)
   layoutSlot: [], // Array berisi info slot yang terisi atau kosong
   fotografer: null,
-  tingkatKesulitan: 'mudah'
+  tingkatKesulitan: 'mudah',
+  jumlahHint: 0, // Counter untuk hint yang digunakan
+  hintMaximal: 3, // Maksimal hint = 3x
+  slotKosongTelahDiHint: [] // Array untuk track slot yang sudah di-hint
 };
 
 // ================================================================
@@ -264,7 +267,15 @@ function generatePuzzle(urlGambar) {
 
   stateGame.sedangBermain = true;
   stateGame.skor = 0;
+  stateGame.jumlahHint = 0; // Reset hint counter
+  stateGame.slotKosongTelahDiHint = []; // Reset slot hint history
   updateDisplaySkor();
+  
+  // Update tombol hint display
+  const tombolHint = document.getElementById('tombol-hint');
+  if (tombolHint) {
+    tombolHint.textContent = `💡 Hint (0/${stateGame.hintMaximal})`;
+  }
 }
 
 /**
@@ -537,9 +548,17 @@ function resetPermainan() {
   stateGame.skor = 0;
   stateGame.waktuDetik = 0;
   stateGame.layoutSlot = new Array(stateGame.ukuranGrid * stateGame.ukuranGrid).fill(null);
+  stateGame.jumlahHint = 0; // Reset hint counter
+  stateGame.slotKosongTelahDiHint = []; // Reset slot hint history
 
   updateDisplaySkor();
   updateDisplayWaktu();
+  
+  // Update tombol hint display
+  const tombolHint = document.getElementById('tombol-hint');
+  if (tombolHint) {
+    tombolHint.textContent = `💡 Hint (0/${stateGame.hintMaximal})`;
+  }
 
   // Shuffle dan re-render
   shuffleTiles();
@@ -559,31 +578,39 @@ function resetPermainan() {
 
 /**
  * Fungsi: berikanHint
- * Deskripsi: Berikan hint dengan menunjukkan slot kosong pertama dan tile yang sesuai
+ * Deskripsi: Berikan hint dengan menunjukkan slot kosong RANDOM dan tile yang sesuai
+ *           Limited hanya 3 kali per game
  */
 function berikanHint() {
   console.log('💡 === HINT ===');
+  
+  // Cek apakah sudah mencapai limit hint (3x)
+  if (stateGame.jumlahHint >= stateGame.hintMaximal) {
+    alert(`❌ Hint sudah habis! Maksimal ${stateGame.hintMaximal} kali per game.`);
+    console.log(`❌ Hint sudah digunakan ${stateGame.jumlahHint} kali (limit: ${stateGame.hintMaximal})`);
+    return;
+  }
 
-  // Cari slot kosong PERTAMA (bukan random)
-  let slotIndex = -1;
+  // Cari semua slot kosong
+  const daftarSlotKosong = [];
   for (let i = 0; i < stateGame.layoutSlot.length; i++) {
     if (stateGame.layoutSlot[i] === null) {
-      slotIndex = i;
-      break; // Ambil yang pertama saja
+      daftarSlotKosong.push(i);
     }
   }
 
-  if (slotIndex === -1) {
+  if (daftarSlotKosong.length === 0) {
     console.log('❌ Tidak ada slot kosong');
     return;
   }
 
-  // Slot kosong sudah ditemukan (slotIndex)
+  // Pilih slot kosong secara RANDOM (bukan berurutan)
+  const randomIndex = Math.floor(Math.random() * daftarSlotKosong.length);
+  const slotIndex = daftarSlotKosong[randomIndex];
+
   const slot = document.getElementById(`slot-${slotIndex}`);
 
   // Cari tile yang SESUAI dengan slot ini
-  // Tile yang sesuai adalah tile yang memiliki index sama dengan slotIndex
-  // (karena tiles sudah di-shuffle, harus cari dalam array)
   const tileYangSesuai = stateGame.tiles.find(tile => tile.index === slotIndex);
   
   if (!tileYangSesuai) {
@@ -598,12 +625,21 @@ function berikanHint() {
   slot.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.9), inset 0 0 20px rgba(16, 185, 129, 0.4)';
 
   // Highlight tile di pool
-  if (tileElement && !tileElement.style.display || tileElement.style.display !== 'none') {
+  if (tileElement && (!tileElement.style.display || tileElement.style.display !== 'none')) {
     tileElement.style.border = '3px solid #10b981';
     tileElement.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.9)';
   }
 
-  console.log(`💡 Hint: Slot ${slotIndex} kosong → Tile ${tileYangSesuai.index} yang sesuai`);
+  // Increment hint counter
+  stateGame.jumlahHint++;
+  
+  // Update display tombol hint
+  const tombolHint = document.getElementById('tombol-hint');
+  if (tombolHint) {
+    tombolHint.textContent = `💡 Hint (${stateGame.jumlahHint}/${stateGame.hintMaximal})`;
+  }
+
+  console.log(`💡 Hint #${stateGame.jumlahHint}: Slot ${slotIndex} kosong (RANDOM) → Tile ${tileYangSesuai.index}`);
 
   // Remove highlight setelah 3 detik
   const durasi = 3000;
