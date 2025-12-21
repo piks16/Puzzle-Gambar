@@ -348,7 +348,7 @@ function bukaHalamanLeaderboard() {
 
 /**
  * Fungsi: loadLeaderboardLengkap
- * Deskripsi: Load dan tampilkan semua game dalam card layout
+ * Deskripsi: Load dan tampilkan semua game yang dimainkan diurutkan dari skor tertinggi
  */
 async function loadLeaderboardLengkap() {
   try {
@@ -356,11 +356,7 @@ async function loadLeaderboardLengkap() {
     if (!isiTabel) return;
 
     // Show loading
-    const parent = isiTabel.parentElement;
-    if (parent) {
-      const loading = parent.querySelector('.card-loading');
-      if (loading) loading.style.display = 'block';
-    }
+    isiTabel.innerHTML = '<tr><td colspan="6" class="loading">Memuat peringkat...</td></tr>';
 
     const response = await fetch(`${URL_API}/papan-peringkat`);
     const result = await response.json();
@@ -368,68 +364,41 @@ async function loadLeaderboardLengkap() {
     if (result.sukses && result.data.length > 0) {
       let html = '';
 
-      result.data.forEach((game, index) => {
+      result.data.forEach((game) => {
         const tanggal = game.tanggal 
           ? new Date(game.tanggal).toLocaleDateString('id-ID', { 
               year: 'numeric',
-              month: 'short',
-              day: '2-digit'
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit'
             })
           : '-';
         
         const kesulitan = game.tingkat_kesulitan.charAt(0).toUpperCase() + game.tingkat_kesulitan.slice(1);
-        const initial = game.nama_pemain.charAt(0).toUpperCase();
-        const rankClass = index === 0 ? 'top1' : index === 1 ? 'top2' : index === 2 ? 'top3' : '';
-        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
 
         html += `
-          <div class="card-leaderboard">
-            <div class="card-rank-badge ${rankClass}">${index + 1}</div>
-            
-            <div class="card-header">
-              <div class="card-avatar">${medal || initial}</div>
-              <div class="card-nama">
-                <div class="card-nama-text">${game.nama_pemain}</div>
-              </div>
-            </div>
-
-            <div class="card-stats">
-              <div class="card-stat">
-                <span class="card-stat-label">Skor</span>
-                <span class="card-stat-value skor">${game.skor} pts</span>
-              </div>
-              <div class="card-stat">
-                <span class="card-stat-label">Waktu</span>
-                <span class="card-stat-value waktu">${game.waktu_detik}s</span>
-              </div>
-            </div>
-
-            <div class="card-footer">
-              <span class="card-kesulitan">${kesulitan} ${game.ukuran_grid}x${game.ukuran_grid}</span>
-              <span class="card-tanggal">${tanggal}</span>
-            </div>
-          </div>
+          <tr>
+            <td class="kolom-rank">${game.rank}</td>
+            <td class="kolom-nama">${game.nama_pemain}</td>
+            <td class="kolom-skor">${game.skor} pts</td>
+            <td class="kolom-waktu">${game.waktu_detik}s</td>
+            <td class="kolom-kesulitan">${kesulitan} (${game.ukuran_grid}x${game.ukuran_grid})</td>
+            <td class="kolom-tanggal">${tanggal}</td>
+          </tr>
         `;
       });
 
       isiTabel.innerHTML = html;
-      if (parent) {
-        const loading = parent.querySelector('.card-loading');
-        if (loading) loading.style.display = 'none';
-      }
       console.log('✅ Leaderboard dimuat: ' + result.data.length + ' game');
     } else {
-      isiTabel.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--warna-teks-sekunder);">Belum ada data game</div>';
-      if (parent) {
-        const loading = parent.querySelector('.card-loading');
-        if (loading) loading.style.display = 'none';
-      }
+      isiTabel.innerHTML = '<tr><td colspan="6" class="kosong">Belum ada data game</td></tr>';
     }
   } catch (error) {
     console.error('❌ Error load leaderboard:', error);
     const isiTabel = document.getElementById('isi-tabel-peringkat');
     if (isiTabel) {
-      isiTabel.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--warna-teks-sekunder);">Gagal memuat peringkat</div>';
+      isiTabel.innerHTML = '<tr><td colspan="6" class="kosong">Gagal memuat peringkat</td></tr>';
     }
   }
 }

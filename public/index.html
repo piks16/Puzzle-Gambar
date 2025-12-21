@@ -71,11 +71,24 @@
 
           <!-- TABEL LEADERBOARD -->
           <div class="wadah-leaderboard">
-            <div id="tabel-peringkat" class="grid-leaderboard">
-              <div class="card-loading">
-                <p>Memuat peringkat...</p>
-              </div>
-              <div id="isi-tabel-peringkat" class="grid-cards"></div>
+            <div id="tabel-peringkat" class="tabel-peringkat">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="kolom-rank">Peringkat</th>
+                    <th class="kolom-nama">Nama Pemain</th>
+                    <th class="kolom-skor">Skor</th>
+                    <th class="kolom-waktu">Waktu</th>
+                    <th class="kolom-kesulitan">Kesulitan</th>
+                    <th class="kolom-tanggal">Tanggal</th>
+                  </tr>
+                </thead>
+                <tbody id="isi-tabel-peringkat">
+                  <tr>
+                    <td colspan="6" class="loading">Memuat peringkat...</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
