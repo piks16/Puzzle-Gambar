@@ -71,24 +71,11 @@
 
           <!-- TABEL LEADERBOARD -->
           <div class="wadah-leaderboard">
-            <div id="tabel-peringkat" class="tabel-peringkat">
-              <table>
-                <thead>
-                  <tr>
-                    <th class="kolom-rank">Peringkat</th>
-                    <th class="kolom-nama">Nama Pemain</th>
-                    <th class="kolom-skor">Skor</th>
-                    <th class="kolom-waktu">Waktu</th>
-                    <th class="kolom-kesulitan">Kesulitan</th>
-                    <th class="kolom-tanggal">Tanggal</th>
-                  </tr>
-                </thead>
-                <tbody id="isi-tabel-peringkat">
-                  <tr>
-                    <td colspan="6" class="loading">Memuat peringkat...</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div id="tabel-peringkat" class="grid-leaderboard">
+              <div class="card-loading">
+                <p>Memuat peringkat...</p>
+              </div>
+              <div id="isi-tabel-peringkat" class="grid-cards"></div>
             </div>
           </div>
         </div>
@@ -123,20 +110,6 @@
           </div>
           <button type="submit" class="tombol-utama">Login</button>
           <div id="pesan-login" class="pesan"></div>
-          <button type="button" class="tombol-lupa-password" onclick="tampilkanFormLupaPassword()">Lupa Password?</button>
-        </form>
-
-        <!-- FORGOT PASSWORD FORM -->
-        <form id="form-lupa-password" class="formulir-auth tersembunyi">
-          <button type="button" class="tombol-kembali-lupa" onclick="kembaliKeLogin()">← Kembali ke Login</button>
-          <h3 style="text-align: center; margin: 1rem 0; color: #ffffff;">Reset Password</h3>
-          <p style="text-align: center; color: var(--warna-teks-sekunder); margin-bottom: 1.5rem;">Masukkan email Anda untuk menerima link reset password</p>
-          <div class="grup-input">
-            <label for="email-lupa">Email</label>
-            <input type="email" id="email-lupa" placeholder="Masukkan email terdaftar Anda" required>
-          </div>
-          <button type="submit" class="tombol-utama">Kirim Link Reset</button>
-          <div id="pesan-lupa" class="pesan"></div>
         </form>
 
         <!-- REGISTER FORM -->

@@ -392,45 +392,6 @@ small {
   border-left: 4px solid #ef4444;
 }
 
-/* FORGOT PASSWORD BUTTON */
-.tombol-lupa-password {
-  width: 100%;
-  padding: 0.75rem;
-  background: transparent;
-  border: none;
-  color: var(--warna-primer);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  transition: var(--transisi-standar);
-  margin-top: 0.5rem;
-}
-
-.tombol-lupa-password:hover {
-  color: var(--warna-sekunder);
-  text-decoration: underline;
-}
-
-.tombol-kembali-lupa {
-  background: transparent;
-  color: var(--warna-primer);
-  border: 2px solid var(--warna-primer);
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  transition: var(--transisi-standar);
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.tombol-kembali-lupa:hover {
-  background: rgba(99, 102, 241, 0.1);
-  transform: translateX(-3px);
-}
-
 /* ================================================================
    5. BUTTONS
    ================================================================ */
@@ -1075,133 +1036,190 @@ small {
 .wadah-leaderboard {
   margin-top: 2rem;
   border-radius: var(--radius-base);
-  overflow: hidden;
-  border: 1px solid var(--warna-border);
+  overflow: visible;
 }
 
-.tabel-peringkat {
+.grid-leaderboard {
   width: 100%;
-  overflow-x: auto;
 }
 
-.tabel-peringkat table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: var(--warna-bg-sekunder);
-}
-
-.tabel-peringkat thead {
-  background: linear-gradient(135deg, var(--warna-primer) 0%, var(--warna-sekunder) 100%);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.tabel-peringkat th {
-  padding: 1.25rem 1rem;
-  text-align: left;
-  font-weight: 600;
-  color: #ffffff;
-  font-size: 0.95rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.tabel-peringkat td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--warna-border);
-  color: var(--warna-teks);
-  font-size: 0.95rem;
-}
-
-.tabel-peringkat tbody tr {
-  transition: var(--transisi-standar);
-}
-
-.tabel-peringkat tbody tr:hover {
-  background-color: rgba(99, 102, 241, 0.1);
-}
-
-.tabel-peringkat tbody tr:last-child td {
-  border-bottom: none;
-}
-
-/* Nomor peringkat dengan styling khusus */
-.kolom-rank {
-  width: 80px;
-  text-align: center;
-}
-
-.tabel-peringkat td:first-child {
-  text-align: center;
-  font-weight: 600;
-  color: var(--warna-primer);
-  font-size: 1.1rem;
-}
-
-/* Medal emoji untuk top 3 */
-.tabel-peringkat tbody tr:nth-child(1) td:first-child::before {
-  content: '🥇 ';
-}
-
-.tabel-peringkat tbody tr:nth-child(2) td:first-child::before {
-  content: '🥈 ';
-}
-
-.tabel-peringkat tbody tr:nth-child(3) td:first-child::before {
-  content: '🥉 ';
-}
-
-/* Skor styling */
-.kolom-skor {
-  text-align: right;
-  font-weight: 600;
-  color: var(--warna-sukses);
-  font-size: 1.05rem;
-}
-
-.tabel-peringkat td.kolom-skor {
-  color: var(--warna-sukses);
-}
-
-/* Waktu tercepat */
-.kolom-waktu {
-  text-align: center;
-  font-weight: 500;
-  color: var(--warna-info);
-}
-
-/* Nama pemain */
-.kolom-nama {
-  font-weight: 500;
-  width: 200px;
-}
-
-/* Email */
-.kolom-email {
-  font-size: 0.9rem;
-  color: var(--warna-teks-sekunder);
-}
-
-/* Waktu login */
-.kolom-login {
-  font-size: 0.85rem;
-  color: var(--warna-teks-sekunder);
-}
-
-/* Loading state */
-.tabel-peringkat .loading {
+.card-loading {
   text-align: center;
   padding: 2rem;
   color: var(--warna-teks-sekunder);
   font-style: italic;
 }
 
-/* Empty state */
-.tabel-peringkat .kosong {
-  text-align: center;
-  padding: 2rem;
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* CARD LEADERBOARD STYLES */
+.card-leaderboard {
+  background: linear-gradient(135deg, var(--warna-bg-sekunder) 0%, rgba(30, 41, 59, 0.8) 100%);
+  border: 2px solid var(--warna-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: var(--transisi-standar);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.card-leaderboard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--warna-primer), var(--warna-sekunder));
+}
+
+.card-leaderboard:hover {
+  border-color: var(--warna-primer);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(30, 41, 59, 0.9) 100%);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.25);
+}
+
+/* Card Rank Badge */
+.card-rank-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, var(--warna-primer), var(--warna-sekunder));
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+}
+
+.card-rank-badge.top1 {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+.card-rank-badge.top2 {
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+}
+
+.card-rank-badge.top3 {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-right: 3.5rem;
+}
+
+.card-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--warna-primer), var(--warna-sekunder));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.card-nama {
+  flex: 1;
+}
+
+.card-nama-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+  word-break: break-word;
+}
+
+.card-email {
+  font-size: 0.85rem;
   color: var(--warna-teks-sekunder);
+}
+
+/* Card Stats */
+.card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.card-stat-label {
+  font-size: 0.85rem;
+  color: var(--warna-teks-sekunder);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--warna-primer);
+}
+
+.card-stat-value.skor {
+  color: var(--warna-sukses);
+}
+
+.card-stat-value.waktu {
+  color: #f59e0b;
+}
+
+/* Card Footer */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-kesulitan {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--warna-primer);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.card-tanggal {
+  font-size: 0.8rem;
+  color: var(--warna-teks-sekunder);
+}
+
+/* Medal Icons */
+.medal-icon {
+  font-size: 1.2rem;
+  margin-right: 0.3rem;
 }
 
 .bagian-aksi {

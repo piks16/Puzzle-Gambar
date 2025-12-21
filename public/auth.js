@@ -45,7 +45,6 @@ function inisialisasiAuthentikasi() {
   // Setup form submissions
   const formLogin = document.getElementById('form-login');
   const formDaftar = document.getElementById('form-daftar');
-  const formLupaPassword = document.getElementById('form-lupa-password');
 
   if (formLogin) {
     formLogin.addEventListener('submit', handleLoginSubmit);
@@ -53,10 +52,6 @@ function inisialisasiAuthentikasi() {
 
   if (formDaftar) {
     formDaftar.addEventListener('submit', handleDaftarSubmit);
-  }
-
-  if (formLupaPassword) {
-    formLupaPassword.addEventListener('submit', handleLupaPasswordSubmit);
   }
 
   // Check jika sudah ada session
@@ -221,86 +216,6 @@ function validasiEmail(email) {
 function tampilkanPesan(element, pesan, tipe = 'info') {
   element.textContent = pesan;
   element.className = `pesan ${tipe}`;
-}
-
-// ================================================================
-// NAVIGASI FORGOT PASSWORD
-// ================================================================
-
-function tampilkanFormLupaPassword() {
-  const formLogin = document.getElementById('form-login');
-  const formLupaPassword = document.getElementById('form-lupa-password');
-  
-  formLogin.classList.add('tersembunyi');
-  formLupaPassword.classList.remove('tersembunyi');
-  
-  console.log('📧 Tampilkan form lupa password');
-}
-
-function kembaliKeLogin() {
-  const formLogin = document.getElementById('form-login');
-  const formLupaPassword = document.getElementById('form-lupa-password');
-  
-  formLupaPassword.classList.add('tersembunyi');
-  formLogin.classList.remove('tersembunyi');
-  document.getElementById('form-lupa-password').reset();
-  
-  console.log('🔐 Kembali ke login');
-}
-
-// ================================================================
-// 5. FORGOT PASSWORD HANDLER
-// ================================================================
-
-async function handleLupaPasswordSubmit(e) {
-  e.preventDefault();
-
-  const email = document.getElementById('email-lupa').value.trim();
-  const pesanLupa = document.getElementById('pesan-lupa');
-
-  // Validasi
-  if (!email) {
-    tampilkanPesan(pesanLupa, '❌ Email harus diisi', 'error');
-    return;
-  }
-
-  if (!validasiEmail(email)) {
-    tampilkanPesan(pesanLupa, '❌ Format email tidak valid', 'error');
-    return;
-  }
-
-  try {
-    console.log('📧 Mengirim request lupa password...');
-    pesanLupa.innerHTML = '⏳ Memproses...';
-
-    const response = await fetch(`${URL_API}/lupa-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-
-    const data = await response.json();
-
-    if (!data.sukses) {
-      tampilkanPesan(pesanLupa, `❌ ${data.pesan}`, 'error');
-      return;
-    }
-
-    console.log('✅ Email reset password berhasil dikirim!');
-    tampilkanPesan(pesanLupa, '✅ Link reset password telah dikirim ke email Anda!', 'success');
-
-    // Tampilkan notifikasi
-    buatNotifikasi('📧 Email Terkirim!', `Link reset password telah dikirim ke:\n${email}\n\nSilakan cek email Anda dan klik link untuk reset password.`, 'success');
-
-    // Kembali ke login setelah 3 detik
-    setTimeout(() => {
-      kembaliKeLogin();
-      document.getElementById('form-lupa-password').reset();
-    }, 3000);
-  } catch (error) {
-    console.error('❌ Error lupa password:', error);
-    tampilkanPesan(pesanLupa, '❌ Terjadi kesalahan. Coba lagi.', 'error');
-  }
 }
 
 function cekSesiAda() {
