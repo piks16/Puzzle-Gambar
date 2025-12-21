@@ -188,13 +188,16 @@ async function handleDaftarSubmit(e) {
     console.log('✅ Daftar berhasil!');
     tampilkanPesan(pesanDaftar, '✅ Daftar berhasil! Silakan login.', 'success');
 
+    // Tampilkan notifikasi modal
+    buatNotifikasi('🎉 Selamat!', `Pendaftaran berhasil, ${nama}!\nEmail konfirmasi telah dikirim ke ${email}\nSilakan login untuk memulai bermain.`, 'success');
+
     // Clear form
     document.getElementById('form-daftar').reset();
 
     // Switch ke tab login
     setTimeout(() => {
       document.querySelector('[data-tab="login"]').click();
-    }, 1500);
+    }, 2000);
   } catch (error) {
     console.error('❌ Error daftar:', error);
     tampilkanPesan(pesanDaftar, '❌ Terjadi kesalahan. Coba lagi.', 'error');
@@ -237,4 +240,100 @@ function tampilkanHalamanMenu() {
 
   // Load leaderboard preview
   loadPapaanPreview();
+}
+
+// ================================================================
+// 6. NOTIFIKASI MODAL
+// ================================================================
+
+function buatNotifikasi(judul, pesan, tipe = 'info') {
+  // Buat container modal jika belum ada
+  let modal = document.getElementById('modal-notifikasi');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-notifikasi';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    `;
+    document.body.appendChild(modal);
+  }
+
+  // Buat konten notifikasi
+  const konten = document.createElement('div');
+  konten.style.cssText = `
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+  `;
+
+  let warna = '#10b981'; // success - hijau
+  if (tipe === 'error') warna = '#ef4444'; // merah
+  if (tipe === 'warning') warna = '#f59e0b'; // orange
+  if (tipe === 'info') warna = '#6366f1'; // biru
+
+  konten.innerHTML = `
+    <div style="color: ${warna}; font-size: 2.5rem; margin-bottom: 1rem;">
+      ${tipe === 'success' ? '✅' : tipe === 'error' ? '❌' : tipe === 'warning' ? '⚠️' : 'ℹ️'}
+    </div>
+    <h3 style="color: #1f2937; margin-bottom: 0.5rem; font-size: 1.5rem;">${judul}</h3>
+    <p style="color: #6b7280; line-height: 1.6; margin-bottom: 1.5rem;">${pesan.replace(/\n/g, '<br>')}</p>
+    <button onclick="tutupNotifikasi()" style="
+      background: ${warna};
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+      Lanjutkan
+    </button>
+  `;
+
+  modal.innerHTML = '';
+  modal.appendChild(konten);
+  modal.style.opacity = '1';
+  modal.style.pointerEvents = 'auto';
+}
+
+function tutupNotifikasi() {
+  const modal = document.getElementById('modal-notifikasi');
+  if (modal) {
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+  }
+}
+
+// Tambahkan style animasi
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+`;
+if (document.head) {
+  document.head.appendChild(styleSheet);
 }

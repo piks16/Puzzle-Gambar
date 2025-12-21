@@ -300,6 +300,7 @@ small {
   text-align: center;
   margin-bottom: 3rem;
   font-size: 1.125rem;
+  color: #ffffff;
 }
 
 /* TAB NAVIGATION */
@@ -316,7 +317,7 @@ small {
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
-  color: var(--warna-teks-sekunder);
+  color: #ffffff;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -351,7 +352,7 @@ small {
 
 .grup-input label {
   font-weight: 600;
-  color: var(--warna-teks);
+  color: #ffffff;
 }
 
 .grup-input input {
