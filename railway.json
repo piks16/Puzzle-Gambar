@@ -1,0 +1,11 @@
+{
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "npm install",
+    "startCommand": "npm start"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "cronJob": false
+  }
+}
