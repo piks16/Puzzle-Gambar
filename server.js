@@ -383,16 +383,22 @@ aplikasi.post('/api/daftar', async (req, res) => {
     console.log(`✅ User berhasil terdaftar: ${nama}`);
 
     // Kirim email konfirmasi
-    await pengaturanEmail.sendMail({
-      from: process.env.EMAIL_PENGIRIM,
-      to: email,
-      subject: '🎉 Selamat Datang di Program Permainan Puzzle!',
-      html: `
-        <h2>Selamat Datang, ${nama}!</h2>
-        <p>Akun Anda telah berhasil dibuat.</p>
-        <p>Silakan login ke aplikasi dan mulai bermain puzzle!</p>
-      `
-    }).catch(err => console.error('Gagal kirim email:', err.message));
+    try {
+      await pengaturanEmail.sendMail({
+        from: konfigurasi.EMAIL.PENGIRIM,
+        to: email,
+        subject: '🎉 Selamat Datang di Program Permainan Puzzle!',
+        html: `
+          <h2>Selamat Datang, ${nama}!</h2>
+          <p>Akun Anda telah berhasil dibuat.</p>
+          <p>Silakan login ke aplikasi dan mulai bermain puzzle!</p>
+        `
+      });
+      console.log('✅ Email konfirmasi terkirim ke:', email);
+    } catch (emailError) {
+      console.error('⚠️  Email gagal terkirim:', emailError.message);
+      // Tetap lanjutkan response meskipun email gagal
+    }
 
     res.json({
       sukses: true,

@@ -189,15 +189,20 @@ async function handleDaftarSubmit(e) {
     tampilkanPesan(pesanDaftar, '✅ Daftar berhasil! Silakan login.', 'success');
 
     // Tampilkan notifikasi modal
-    buatNotifikasi('🎉 Selamat!', `Pendaftaran berhasil, ${nama}!\nEmail konfirmasi telah dikirim ke ${email}\nSilakan login untuk memulai bermain.`, 'success');
+    const notifikasi = buatNotifikasi('🎉 Selamat!', `Pendaftaran berhasil, ${nama}!\nEmail konfirmasi telah dikirim ke ${email}\nSilakan login untuk memulai bermain.`, 'success');
+    console.log('📢 Notifikasi ditampilkan');
 
     // Clear form
     document.getElementById('form-daftar').reset();
 
     // Switch ke tab login
     setTimeout(() => {
-      document.querySelector('[data-tab="login"]').click();
-    }, 2000);
+      const btnLogin = document.querySelector('[data-tab="login"]');
+      if (btnLogin) {
+        btnLogin.click();
+        console.log('🔄 Switch ke tab login');
+      }
+    }, 3000);
   } catch (error) {
     console.error('❌ Error daftar:', error);
     tampilkanPesan(pesanDaftar, '❌ Terjadi kesalahan. Coba lagi.', 'error');
