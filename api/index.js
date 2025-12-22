@@ -10,7 +10,6 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 const sharp = require('sharp');
 const { createClient } = require('@supabase/supabase-js');
-const konfigurasi = require('../config/konfigurasi');
 
 // ================================================================
 // INISIALISASI APLIKASI
@@ -23,15 +22,23 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('public'));
 
+// Environment Variables
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
+const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'gmail';
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+
 // Supabase Client
-const supabase = createClient(konfigurasi.SUPABASE_URL, konfigurasi.SUPABASE_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Email Transporter
 const transporter = nodemailer.createTransport({
-  service: konfigurasi.EMAIL_SERVICE,
+  service: EMAIL_SERVICE,
   auth: {
-    user: konfigurasi.EMAIL_USER,
-    pass: konfigurasi.EMAIL_PASSWORD
+    user: EMAIL_USER,
+    pass: EMAIL_PASSWORD
   }
 });
 
@@ -164,7 +171,7 @@ app.get('/api/gambar', async (req, res) => {
 
     const response = await axios.get('https://api.pexels.com/v1/curated', {
       headers: {
-        'Authorization': konfigurasi.PEXELS_API_KEY
+        'Authorization': PEXELS_API_KEY
       },
       params: {
         page: parseInt(page),
