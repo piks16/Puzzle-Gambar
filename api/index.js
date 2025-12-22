@@ -5,6 +5,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
@@ -20,7 +21,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Environment Variables
 const SUPABASE_URL = process.env.SUPABASE_URL;
