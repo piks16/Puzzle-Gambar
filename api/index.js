@@ -4,8 +4,7 @@
  */
 
 require('dotenv').config();
-const express = require('http');
-const socketIO = require('socket.io');
+const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
