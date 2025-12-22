@@ -27,9 +27,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
-const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'gmail';
+const EMAIL_SERVICE = process.env.EMAIL_SERVICE;
 const EMAIL_PENGIRIM = process.env.EMAIL_PENGIRIM;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+
+// Validasi env variables
+const requiredEnvVars = ['SUPABASE_URL', 'SUPABASE_KEY', 'PEXELS_API_KEY', 'EMAIL_SERVICE', 'EMAIL_PENGIRIM', 'EMAIL_PASSWORD'];
+for (const varName of requiredEnvVars) {
+  if (!process.env[varName]) {
+    console.warn(`⚠️ Warning: Environment variable ${varName} tidak ditemukan!`);
+  }
+}
 
 // Supabase Client
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
