@@ -75,7 +75,7 @@ app.get('/', (req, res) => {
 });
 
 // Login endpoint
-app.post('/api/login', async (req, res) => {
+const loginHandler = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -102,6 +102,9 @@ app.post('/api/login', async (req, res) => {
       sukses: true,
       pesan: 'Login berhasil',
       data: {
+        sesiId: data.session.access_token,
+        nama: data.user.user_metadata?.username || email,
+        email: data.user.email,
         user: data.user,
         session: data.session
       }
@@ -113,14 +116,18 @@ app.post('/api/login', async (req, res) => {
       pesan: 'Terjadi kesalahan server'
     });
   }
-});
+};
+
+app.post('/api/login', loginHandler);
+app.post('/api/masuk', loginHandler);
 
 // Register endpoint
-app.post('/api/register', async (req, res) => {
+const registerHandler = async (req, res) => {
   try {
-    const { email, password, username } = req.body;
+    const { email, password, username, nama } = req.body;
+    const userName = username || nama;
 
-    if (!email || !password || !username) {
+    if (!email || !password || !userName) {
       return res.status(400).json({
         sukses: false,
         pesan: 'Email, password, dan username harus diisi'
@@ -132,7 +139,7 @@ app.post('/api/register', async (req, res) => {
       password,
       options: {
         data: {
-          username: username
+          username: userName
         }
       }
     });
@@ -151,7 +158,7 @@ app.post('/api/register', async (req, res) => {
         to: email,
         subject: 'Selamat datang di Game Puzzle!',
         html: `
-          <h2>Selamat datang, ${username}!</h2>
+          <h2>Selamat datang, ${userName}!</h2>
           <p>Terima kasih telah mendaftar. Silakan verifikasi email Anda untuk melanjutkan.</p>
         `
       });
@@ -171,9 +178,28 @@ app.post('/api/register', async (req, res) => {
       pesan: 'Terjadi kesalahan server'
     });
   }
+};
+
+app.post('/api/register', registerHandler);
+app.post('/api/daftar', registerHandler);
+
+// Logout endpoint
+app.post('/api/keluar', (req, res) => {
+  try {
+    // Supabase handles session management, just clear client-side
+    res.json({
+      sukses: true,
+      pesan: 'Logout berhasil'
+    });
+  } catch (err) {
+    console.error('Logout error:', err);
+    res.status(500).json({
+      sukses: false,
+      pesan: 'Terjadi kesalahan server'
+    });
+  }
 });
 
-// Get gambar dari Pexels
 app.get('/api/gambar', async (req, res) => {
   try {
     const { page = 1, per_page = 1 } = req.query;
@@ -204,6 +230,49 @@ app.get('/api/gambar', async (req, res) => {
     });
   } catch (err) {
     console.error('Fetch image error:', err.message);
+    res.status(500).json({
+      sukses: false,
+      pesan: 'Terjadi kesalahan saat mengambil gambar'
+    });
+  }
+});
+
+// Alias untuk gambar-acak (gunakan endpoint gambar dengan random page)
+app.get('/api/gambar-acak', async (req, res) => {
+  try {
+    const randomPage = Math.floor(Math.random() * 100) + 1;
+    const response = await axios.get('https://api.pexels.com/v1/curated', {
+      headers: {
+        'Authorization': PEXELS_API_KEY
+      },
+      params: {
+        page: randomPage,
+        per_page: 1
+      }
+    });
+
+    const photos = response.data.photos;
+
+    if (photos.length === 0) {
+      return res.status(404).json({
+        sukses: false,
+        pesan: 'Tidak ada foto tersedia'
+      });
+    }
+
+    const photo = photos[0];
+    
+    res.json({
+      sukses: true,
+      pesan: 'Gambar berhasil diambil dan di-crop ke square',
+      data: {
+        idGambar: photo.id,
+        urlGambar: photo.src.large,
+        altText: photo.alt
+      }
+    });
+  } catch (err) {
+    console.error('Fetch random image error:', err.message);
     res.status(500).json({
       sukses: false,
       pesan: 'Terjadi kesalahan saat mengambil gambar'
@@ -276,7 +345,7 @@ app.post('/api/potong-gambar', async (req, res) => {
 });
 
 // Simpan score
-app.post('/api/simpan-score', async (req, res) => {
+const saveScoreHandler = async (req, res) => {
   try {
     const { user_id, username, score, waktu_mainkan, kesulitan } = req.body;
 
@@ -319,10 +388,13 @@ app.post('/api/simpan-score', async (req, res) => {
       pesan: 'Terjadi kesalahan server'
     });
   }
-});
+};
+
+app.post('/api/simpan-score', saveScoreHandler);
+app.post('/api/simpan-skor', saveScoreHandler);
 
 // Get leaderboard
-app.get('/api/leaderboard', async (req, res) => {
+const getLeaderboardHandler = async (req, res) => {
   try {
     const { kesulitan = 'normal', limit = 10 } = req.query;
 
@@ -352,7 +424,10 @@ app.get('/api/leaderboard', async (req, res) => {
       pesan: 'Terjadi kesalahan server'
     });
   }
-});
+};
+
+app.get('/api/leaderboard', getLeaderboardHandler);
+app.get('/api/papan-peringkat', getLeaderboardHandler);
 
 // Default error handler
 app.use((err, req, res, next) => {
