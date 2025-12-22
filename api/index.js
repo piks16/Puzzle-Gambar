@@ -28,7 +28,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
 const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'gmail';
-const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PENGIRIM = process.env.EMAIL_PENGIRIM;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
 // Supabase Client
@@ -38,7 +38,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const transporter = nodemailer.createTransport({
   service: EMAIL_SERVICE,
   auth: {
-    user: EMAIL_USER,
+    user: EMAIL_PENGIRIM,
     pass: EMAIL_PASSWORD
   }
 });
@@ -139,7 +139,7 @@ app.post('/api/register', async (req, res) => {
     // Kirim email konfirmasi
     try {
       await transporter.sendMail({
-        from: konfigurasi.EMAIL_USER,
+        from: EMAIL_PENGIRIM,
         to: email,
         subject: 'Selamat datang di Game Puzzle!',
         html: `
