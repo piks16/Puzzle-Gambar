@@ -652,7 +652,7 @@ aplikasi.post('/api/simpan-skor', async (req, res) => {
 /**
  * RUTE: GET /api/papan-peringkat
  * Deskripsi: Ambil semua game yang dimainkan diurutkan dari skor tertinggi ke terendah
- * Pengurutan: Berdasarkan skor DESC, kemudian waktu DESC
+ * Pengurutan: Berdasarkan skor DESC (tinggi ke rendah), kemudian waktu ASC (cepat ke lambat) jika skor sama
  */
 aplikasi.get('/api/papan-peringkat', async (req, res) => {
   try {
@@ -669,8 +669,7 @@ aplikasi.get('/api/papan-peringkat', async (req, res) => {
         tanggal,
         ukuran_grid,
         pengguna(id, nama, email)
-      `)
-      .order('skor', { ascending: false });
+      `);
 
     if (kesalahan) {
       console.error('❌ Kesalahan ambil peringkat:', kesalahan.message);
@@ -680,8 +679,18 @@ aplikasi.get('/api/papan-peringkat', async (req, res) => {
       });
     }
 
+    // Sort di aplikasi: skor descending, kemudian waktu ascending
+    const semuaGameSorted = semuaGame.sort((a, b) => {
+      // Jika skor berbeda, urutkan dari skor tertinggi
+      if (b.skor !== a.skor) {
+        return b.skor - a.skor;
+      }
+      // Jika skor sama, urutkan dari waktu paling cepat (kecil ke besar)
+      return a.waktu_detik - b.waktu_detik;
+    });
+
     // Process data untuk format yang lebih rapi
-    const peringkatProsesed = semuaGame.map((game, index) => {
+    const peringkatProsesed = semuaGameSorted.map((game, index) => {
       return {
         rank: index + 1,
         nama_pemain: game.pengguna?.nama || 'Unknown',
@@ -695,6 +704,7 @@ aplikasi.get('/api/papan-peringkat', async (req, res) => {
     });
 
     console.log(`✅ Peringkat diambil: ${peringkatProsesed.length} game`);
+    console.log(`📊 Sorting: Skor DESC, Waktu ASC (jika skor sama)`);
 
     res.json({
       sukses: true,
